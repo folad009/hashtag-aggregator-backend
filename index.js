@@ -66,6 +66,8 @@ async function fetchFromJuicer() {
         post.video_thumb ||
         (isVideo ? "/assets/img/default-thumbnail.jpg" : null);
 
+        console.log("Post data:", post);
+
       return {
         type,
         id: post.external_id || post.id,

@@ -60,11 +60,11 @@ async function fetchFromJuicer() {
       const type = isTikTok ? "tiktok" : "instagram";
 
       // Determine thumbnail:
-      let thumbnail = post.image;
-      if (!thumbnail && isVideo) {
-        // If there's no image but it's a video, use a fallback
-        thumbnail = "/assets/img/default-thumbnail.jpg"; // or host your own placeholder
-      }
+      let thumbnail =
+        post.image ||
+        post.poster ||
+        post.video_thumb ||
+        (isVideo ? "/assets/img/default-thumbnail.jpg" : null);
 
       return {
         type,

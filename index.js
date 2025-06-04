@@ -47,8 +47,6 @@ async function fetchFromJuicer() {
   try {
     const res = await axios.get(`https://www.juicer.io/api/feeds/${JUICER_FEED_ID}`);
 
-    console.log("Juicer raw response:", res.data);
-
     const items = res.data?.posts?.items;
 
     if (!Array.isArray(items)) {
@@ -58,12 +56,21 @@ async function fetchFromJuicer() {
 
     return items.map(post => {
       const isVideo = !!post.video;
+      const isTikTok = post.source === "tiktok";
+      const type = isTikTok ? "tiktok" : "instagram";
+
+      // Determine thumbnail:
+      let thumbnail = post.image;
+      if (!thumbnail && isVideo) {
+        // If there's no image but it's a video, use a fallback
+        thumbnail = "/assets/img/default-thumbnail.jpg"; // or host your own placeholder
+      }
 
       return {
-        type: post.source === "tiktok" ? "tiktok" : "instagram",
+        type,
         id: post.external_id || post.id,
-        media_url: post.video || post.image,
-        thumbnail: post.image,
+        media_url: isVideo ? post.video : post.image,
+        thumbnail,
         media_type: isVideo ? "video" : "image",
         content: post.text || post.title || "",
         permalink: post.full_url,
@@ -75,6 +82,7 @@ async function fetchFromJuicer() {
     return [];
   }
 }
+
 
 
 // ---------- REALTIME SOCKET ----------
